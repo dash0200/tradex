@@ -1,0 +1,12 @@
+{
+  "tradeType": "BUY",
+  "portfolioId": "PF1001",
+  "brokerId": "BRK789",
+  "symbol": "INFY",
+  "quantity": 100,
+  "price": 1450.75,
+  "currency": "INR",
+  "tradeDate": "2026-03-09",
+  "exchange": "NSE",
+  "clientId": "CLT456"
+}

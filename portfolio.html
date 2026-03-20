@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradex Portfolio Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .dashboard {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 800px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #334155;
+            color: #f8fafc;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        button {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            grid-column: 1 / -1;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(124, 58, 237, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            margin-bottom: 2rem;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .holding-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: transform 0.3s, border-color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .holding-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .holding-card:hover {
+            transform: translateY(-5px);
+            border-color: #475569;
+        }
+
+        .holding-card:hover::before {
+            opacity: 1;
+        }
+
+        .holding-symbol {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 0.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .holding-portfolio {
+            font-size: 0.75rem;
+            background: #1e293b;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            color: #94a3b8;
+        }
+
+        .holding-qty {
+            margin-top: 1rem;
+            font-size: 2rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .holding-qty-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.2rem;
+        }
+
+        .holding-val {
+            margin-top: 1rem;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #10b981;
+        }
+
+        .holding-val-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.2rem;
+        }
+
+        .portfolio-total {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 12px;
+            border: 1px dashed #475569;
+            display: none;
+        }
+
+        .portfolio-total h2 {
+            font-size: 1rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .portfolio-total-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+            font-size: 1.1rem;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 16px;
+            border: 1px dashed #334155;
+            display: none;
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #38bdf8;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard">
+        <div class="header">
+            <h1>Tradex Portfolio</h1>
+            <p>Live view of your consolidated holdings from DynamoDB</p>
+        </div>
+
+        <div class="controls-grid">
+            <div class="input-group">
+                <label for="apiUrl">Portfolio API URL</label>
+                <input type="text" id="apiUrl" value="http://localhost:8081" placeholder="e.g. http://localhost:8081">
+            </div>
+
+            <div class="input-group">
+                <label for="jwtToken">JWT Token (from Login)</label>
+                <input type="text" id="jwtToken" placeholder="Paste your Bearer token here...">
+            </div>
+
+            <button onclick="fetchPortfolio()">Load Holdings</button>
+        </div>
+
+        <div id="error" class="error-message"></div>
+        <div id="loader" class="loader">
+            <div class="spinner"></div>
+        </div>
+
+        <div id="empty" class="empty-state">
+            No holdings found. Try uploading a BUY trade!
+        </div>
+
+        <div id="portfolioTotal" class="portfolio-total">
+            <h2>Total Portfolio Value</h2>
+            <div id="portfolioTotalValue" class="portfolio-total-value">₹0.00</div>
+        </div>
+
+        <div id="portfolioGrid" class="portfolio-grid">
+            <!-- Cards will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        async function fetchPortfolio() {
+            const token = document.getElementById('jwtToken').value.trim();
+            const baseUrl = document.getElementById('apiUrl').value.replace(/\/+$/, '');
+            const errorDiv = document.getElementById('error');
+            const grid = document.getElementById('portfolioGrid');
+            const emptyState = document.getElementById('empty');
+            const loader = document.getElementById('loader');
+            const totalContainer = document.getElementById('portfolioTotal');
+            const totalValueSpan = document.getElementById('portfolioTotalValue');
+
+            // Reset states
+            grid.innerHTML = '';
+            errorDiv.style.display = 'none';
+            emptyState.style.display = 'none';
+            totalContainer.style.display = 'none';
+
+            if (!token) {
+                showError("Please provide a JWT token generated from your Tradex login app.");
+                return;
+            }
+
+            loader.style.display = 'block';
+
+            try {
+                const response = await fetch(`${baseUrl}/api/portfolio`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        throw new Error("Unauthorized: Invalid or expired token. Please login again.");
+                    }
+                    throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                loader.style.display = 'none';
+
+                if (data.length === 0) {
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                let totalPortfolioValue = 0;
+
+                data.forEach(holding => {
+                    const value = holding.totalValue || 0;
+                    totalPortfolioValue += value;
+
+                    const card = document.createElement('div');
+                    card.className = 'holding-card';
+                    card.innerHTML = `
+                        <div class="holding-symbol">
+                            ${holding.symbol}
+                            <span class="holding-portfolio">${holding.portfolioId}</span>
+                        </div>
+                        <div class="holding-qty">${holding.quantity.toLocaleString()}</div>
+                        <div class="holding-qty-label">Available Shares</div>
+                        <div class="holding-val">₹${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                        <div class="holding-val-label">Holding Value</div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                totalValueSpan.textContent = `₹${totalPortfolioValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                totalContainer.style.display = 'block';
+
+            } catch (err) {
+                loader.style.display = 'none';
+                showError(err.message);
+            }
+        }
+
+        function showError(msg) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = msg;
+            errorDiv.style.display = 'block';
+        }
+    </script>
+
+</body>
+
+</html>

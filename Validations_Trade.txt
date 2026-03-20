@@ -1,0 +1,75 @@
+Validations rules:
+----------------------
+Sample Trade ID: TRD-20260309-00001 (TRD + YYYYMMDD + Sequence)
+
+| Field       | Type    | Validation              |
+| ----------- | ------- | ----------------------- |
+| tradeType   | String  | Must be BUY or SELL     |
+| portfolioId | String  | Mandatory               |
+| brokerId    | String  | Mandatory               |
+| symbol      | String  | Mandatory               |
+| quantity    | Integer | Must be > 0             |
+| price       | Decimal | Must be > 0             |
+| currency    | String  | Allowed values INR, USD |
+| tradeDate   | Date    | Cannot be future date   |
+| exchange    | String  | NSE / BSE               |
+| clientId    | String  | Mandatory               |
+
+Business Constraints:
+----------------------
+BUY Trade:
+-------------
+Quantity > 0
+Price > 0
+Portfolio must exist
+
+SELL Trade:
+--------------
+Portfolio must contain that stock
+Sell quantity must be ≤ available quantity
+
+
+Edge Cases:
+----------------------
+1 Duplicate Trade Upload
+
+2 Invalid Trade Type
+
+3 Negative Quantity
+
+4 Missing Mandatory Fields
+
+5 SELL Without BUY
+
+Portfolio has no holdings.
+Example:
+SELL INFY 50
+Return BusinessException: No holdings available
+
+6 Partial Sell
+
+Example:
+BUY 100 INFY
+SELL 60 INFY
+Remaining 40 INFY
+
+7 Oversell
+
+Example:
+BUY 100
+SELL 120
+Reject.
+
+8 Invalid JSON
+
+9 Unsupported Exchange
+
+Example:
+exchange = CRYPTO - Reject.
+
+10 Future Trade Date
+
+Example:
+tradeDate = 2030 - Reject.
+
+11 Event delivered multiple times

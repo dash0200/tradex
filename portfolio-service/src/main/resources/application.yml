@@ -1,0 +1,14 @@
+server:
+  port: 8088
+
+jwt:
+  secret: a488e36787df0380f5552db66a6a2353a2ef864bbff4f9328a6fcf4a3f4e3fd7
+  expiration: 86400000 # 24 hours
+
+aws:
+  # Uses the default credential provider chain (env vars, or local AWS CLI config)
+  region: ap-south-1
+  dynamodb:
+    portfolio-table: Portfolios
+  sqs:
+    queue-name: tradex-portfolio-queue
