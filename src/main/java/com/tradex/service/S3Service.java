@@ -5,6 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Service
@@ -31,6 +33,12 @@ public class S3Service {
 
     private AmazonS3 s3Client;
 
+    private final ObjectMapper objectMapper;
+
+    public S3Service(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     @PostConstruct
     public void init() {
         BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
@@ -41,42 +49,25 @@ public class S3Service {
     }
 
     /**
-     * Uploads a file to S3 and returns the generated key.
-     */
-    public String uploadFile(MultipartFile file) throws IOException {
-        // Always ensure .json extension so the S3 trigger fires
-        String originalName = file.getOriginalFilename();
-        if (originalName == null || !originalName.endsWith(".json")) {
-            originalName = (originalName != null ? originalName : "trade") + ".json";
-        }
-        String key = UUID.randomUUID() + "_" + originalName;
-
-        // Read bytes first to guarantee content is captured
-        byte[] bytes = file.getBytes();
-
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("application/json");
-        metadata.setContentLength(bytes.length);
-        System.out.println("File size: " + file.getSize());
-        System.out.println("Bytes length: " + bytes.length);
-        s3Client.putObject(bucket, key, new ByteArrayInputStream(bytes), metadata);
-
-        return key;
-    }
-
-    /**
      * Uploads raw JSON string to S3 and returns the generated key.
      */
-    public String uploadJsonString(String json) {
-        String key = UUID.randomUUID() + "_trade.json";
-        byte[] bytes = json.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+    public String uploadTrade(Trade trade) {
+        try {
+            String key = UUID.randomUUID() + "_trade.json";
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType("application/json");
-        metadata.setContentLength(bytes.length);
+            String json = objectMapper.writeValueAsString(trade);
+            byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
 
-        s3Client.putObject(bucket, key, new ByteArrayInputStream(bytes), metadata);
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType("application/json");
+            metadata.setContentLength(bytes.length);
 
-        return key;
+            s3Client.putObject(bucket, key, new ByteArrayInputStream(bytes), metadata);
+
+            return key;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to upload trade to S3", e);
+        }
     }
 }

@@ -44,7 +44,7 @@
     <!-- Base URL -->
     <div class="card">
       <h2>🔗 Base URL</h2>
-      <input type="text" id="baseUrl" value="http://localhost:8080" />
+      <input type="text" id="baseUrl" value="http://52.66.69.121:8080" />
     </div>
 
     <!-- Login / Register -->
@@ -79,14 +79,6 @@
   "clientId": "CLT456"
 }</textarea>
       <button class="btn-green" onclick="sendJson()">Upload JSON</button>
-    </div>
-
-    <!-- Upload File -->
-    <div class="card">
-      <h2>📁 Step 2b — Upload File</h2>
-      <label>Select a .json file:</label>
-      <input type="file" id="fileInput" accept=".json,.txt" />
-      <button class="btn-purple" onclick="uploadFile()">Upload File</button>
     </div>
 
     <!-- Response -->
@@ -157,7 +149,7 @@
         jwtToken = data.token;
         status.textContent = '✅ Logged in!';
         status.className = 'status ok';
-        tokenEl.textContent = 'Token: ' + jwtToken.substring(0, 40) + '...';
+        tokenEl.textContent = 'Token: ' + jwtToken;
         showResponse(data);
       } else {
         status.textContent = '❌ Login failed';
