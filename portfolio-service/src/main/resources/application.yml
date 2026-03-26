@@ -1,5 +1,5 @@
 server:
-  port: 8088
+  port: 8081
 
 jwt:
   secret: a488e36787df0380f5552db66a6a2353a2ef864bbff4f9328a6fcf4a3f4e3fd7

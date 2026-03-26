@@ -23,8 +23,8 @@ jwt:
 
 # AWS S3 Configuration
 aws:
-  access-key: AKIA5EOAHBIHMH4OL6H2
-  secret-key: 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
+  access-key: ACCESS_KEY
+  secret-key: SECRET_KEY
   s3:
     bucket: tradex-uploads-902883117582
     region: ap-south-1
