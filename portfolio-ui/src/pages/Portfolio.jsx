@@ -2,16 +2,31 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { portfolioApi, tradeUploadApi } from '../api';
 
+
+  const SAMPLE_TRADE = {
+    "tradeType": "BUY",
+    "portfolioId": "PF1001",
+    "brokerId": "BRK789",
+    "symbol": "INFY",
+    "quantity": 100,
+    "price": 1450.75,
+    "currency": "INR",
+    "tradeDate": "2026-03-09",
+    "exchange": "NSE",
+    "clientId": "CLT456"
+  };
+
 function Portfolio() {
   const [portfolio, setPortfolio] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [uploadMsg, setUploadMsg] = useState('');
   const [uploadError, setUploadError] = useState('');
-  const [jsonInput, setJsonInput] = useState('');
-  const [parsedFields, setParsedFields] = useState(null);
+  const [jsonInput, setJsonInput] = useState(JSON.stringify(SAMPLE_TRADE, null, 2));
+  const [parsedFields, setParsedFields] = useState(SAMPLE_TRADE);
   const [jsonParseError, setJsonParseError] = useState(false);
   const navigate = useNavigate();
+
 
   useEffect(() => {
     fetchPortfolio();
@@ -62,7 +77,8 @@ function Portfolio() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    navigate('/login');
+    // navigate('/login');
+    window.location.href = '/login'
   };
 
   const handleJsonSubmit = async () => {

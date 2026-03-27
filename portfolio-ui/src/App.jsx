@@ -3,18 +3,50 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Portfolio from './pages/Portfolio';
 
+
+function isAuthenticated() {
+  return !!localStorage.getItem("token");
+}
+
+function ProtectedRoute({ children }) {
+  return isAuthenticated() ? children : <Navigate to="/login" />;
+}
+
+function PublicRoute({ children }) {
+  return isAuthenticated() ? <Navigate to="/portfolio" /> : children;
+}
+
 function App() {
-  // We check the token dynamically on route render so that the component doesn't
-  // need to be re-mounted when the user logs in from Login.jsx.
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={localStorage.getItem('token') ? <Navigate to="/portfolio" /> : <Login />} />
-        <Route path="/register" element={localStorage.getItem('token') ? <Navigate to="/portfolio" /> : <Register />} />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
+
         <Route
           path="/portfolio"
-          element={localStorage.getItem('token') ? <Portfolio /> : <Navigate to="/login" />}
+          element={
+            <ProtectedRoute>
+              <Portfolio />
+            </ProtectedRoute>
+          }
         />
+
         <Route path="/" element={<Navigate to="/portfolio" />} />
       </Routes>
     </Router>
